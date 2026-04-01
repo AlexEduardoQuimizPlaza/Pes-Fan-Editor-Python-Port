@@ -1,0 +1,5 @@
+# PES Editor 6 - Python Port
+# Core dependency: Python 3.8+ with tkinter (included in standard Python)
+
+# Optional - required for image import/export (emblems, logos):
+Pillow>=9.0.0
