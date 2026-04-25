@@ -9,13 +9,20 @@ National    : startAdrN = 763804, sizeN = 352, total = 64
 
 Within each team's SIZE-byte block:
   offset  58        : licensed flag (1 = licensed)
-  offset  60        : Home kit  (62 bytes: model + 61 colour bytes)
-  offset 122        : Away kit  (62 bytes)
-  offset 184        : 3rd  kit  (62 bytes)
-  offset 246        : GK   kit  (62 bytes)
+  offset  60        : GK Home kit  (62 bytes: model + 61 colour bytes)
+  offset 122        : Home kit     (62 bytes)
+  offset 184        : GK Away kit  (62 bytes)
+  offset 246        : Away kit     (62 bytes)
   offset 256+l*24   : logo entry l (0-3), each 24 bytes
                         +2  = used flag (1 = logo assigned)
                         +3  = logo slot number
+
+The original Compulsion Java port labelled these "Home / Away / 3rd / GK"
+which does not match the actual PES 6 layout — verified against the in-game
+"Editar equipo" preview where slot 0 holds the GK kit, slot 1 the Home kit,
+slot 2 the alternate GK and slot 3 the Away kit.  KIT_SLOT_MAP below remaps
+the user-facing tab order (Home, Away, GK Home, GK Away) onto the on-disk
+slots so the panel shows the right kit per tab.
 """
 
 # Club kit constants (matches Java's Kits.java)
@@ -32,12 +39,18 @@ TOTAL_N      = 64
 LIC_OFFSET   = 58        # licensed flag
 KIT_OFFSET   = 60        # first kit base
 KIT_SIZE     = 62        # bytes per kit (1 model + 61 colour bytes)
-KITS_PER_TEAM = 4        # Home / Away / 3rd / GK
+KITS_PER_TEAM = 4        # Home / Away / GK Home / GK Away
 LOGO_OFFSET  = 256       # logo table base within team block
 LOGO_SIZE    = 24        # bytes per logo entry
 LOGOS_PER_TEAM = 4
 
-KIT_NAMES    = ["Home", "Away", "3rd", "GK"]
+KIT_NAMES    = ["Home", "Away", "GK Home", "GK Away"]
+
+# UI tab index → physical slot index in the OF block.
+# OF stores kits in order (GK Home, Home, GK Away, Away) at offsets
+# 60 / 122 / 184 / 246, but the panel exposes them as (Home, Away,
+# GK Home, GK Away) which is the order players expect.
+KIT_SLOT_MAP = (1, 3, 0, 2)
 
 # WE→PES model number remapping (from Convert.java)
 _MODEL_MAP = {149: 22, 150: 83, 151: 84}   # Java bytes -107,-106,-105 unsigned = 149,150,151
@@ -71,8 +84,13 @@ def _base(team: int) -> int:
 
 
 def _kitinfo_base(team: int, kit: int) -> int:
-    """Absolute offset of the start of KITINFO record for kit slot k."""
-    return _base(team) + KIT_SIZE * kit
+    """Absolute offset of the start of KITINFO record for kit slot k.
+
+    `kit` is the user-facing tab index (0=Home, 1=Away, 2=GK Home, 3=GK Away);
+    KIT_SLOT_MAP translates it to the physical slot used on disk.
+    """
+    physical = KIT_SLOT_MAP[kit]
+    return _base(team) + KIT_SIZE * physical
 
 
 def _kit_addr(team: int, kit: int) -> int:
@@ -187,6 +205,19 @@ def import_kit_block(of1, team1: int, of2, team2: int):
     a1 = _base(team1)
     a2 = _base(team2)
     of1.data[a1: a1 + size] = of2.data[a2: a2 + size]
+
+
+# ── pattern bytes (collar type + design layers) ───────────────────────────────
+# Offsets are relative to _kitinfo_base(team, kit), same as colour offsets.
+# offset 42 = collar/base type (0-2)
+# offset 43 = cuello design, 44 = mangas, 45 = frente, 46 = espalda
+
+def get_pattern_byte(of, team: int, kit: int, offset: int) -> int:
+    return of.data[_kitinfo_base(team, kit) + offset] & 0xFF
+
+
+def set_pattern_byte(of, team: int, kit: int, offset: int, value: int):
+    of.data[_kitinfo_base(team, kit) + offset] = value & 0xFF
 
 
 # ── WE → PES model conversion ─────────────────────────────────────────────────
