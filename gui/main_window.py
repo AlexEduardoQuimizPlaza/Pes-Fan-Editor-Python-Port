@@ -41,7 +41,38 @@ class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("PES Editor 6")
-        self.resizable(False, False)
+        self.resizable(True, True)
+        self.minsize(900, 600)
+
+        # ── Apply modern theme ─────────────────────────────────────────────
+        try:
+            import sv_ttk
+            sv_ttk.set_theme("dark")
+            # sv_ttk only styles ttk widgets; patch native tk widgets too
+            _bg   = "#2b2b2b"
+            _bg2  = "#3d3d3d"
+            _fg   = "#ffffff"
+            _sel_bg = "#0078d4"
+            _sel_fg = "#ffffff"
+            self.option_add("*Background",            _bg)
+            self.option_add("*Foreground",            _fg)
+            self.option_add("*Listbox.background",    _bg2)
+            self.option_add("*Listbox.foreground",    _fg)
+            self.option_add("*Listbox.selectBackground", _sel_bg)
+            self.option_add("*Listbox.selectForeground", _sel_fg)
+            self.option_add("*Listbox.relief",        "flat")
+            self.option_add("*Text.background",       _bg2)
+            self.option_add("*Text.foreground",       _fg)
+            self.option_add("*Entry.background",      _bg2)
+            self.option_add("*Entry.foreground",      _fg)
+            self.option_add("*Entry.insertBackground", _fg)
+            self.configure(bg=_bg)
+        except ImportError:
+            style = ttk.Style(self)
+            try:
+                style.theme_use("clam")
+            except Exception:
+                pass
 
         self._of   = OptionFile()
         self._of2  = OptionFile()

@@ -21,6 +21,9 @@ class StadiumPanel(ttk.Frame):
 
         sb = tk.Scrollbar(pan, orient=tk.VERTICAL)
         self._listbox = tk.Listbox(pan, width=30, height=20,
+                                   background="#3d3d3d", foreground="#ffffff",
+                                   selectbackground="#0078d4",
+                                   selectforeground="#ffffff",
                                    yscrollcommand=sb.set)
         sb.config(command=self._listbox.yview)
         self._listbox.pack(side=tk.LEFT, fill=tk.Y, padx=4, pady=4)

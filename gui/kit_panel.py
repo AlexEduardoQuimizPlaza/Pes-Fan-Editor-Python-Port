@@ -297,6 +297,9 @@ class KitPanel(ttk.Frame):
         ttk.Label(left, text="Equipo").pack()
         sb = ttk.Scrollbar(left, orient=tk.VERTICAL)
         self._listbox = tk.Listbox(left, width=26, height=28,
+                                   background="#3d3d3d", foreground="#ffffff",
+                                   selectbackground="#0078d4",
+                                   selectforeground="#ffffff",
                                    yscrollcommand=sb.set, exportselection=False)
         sb.config(command=self._listbox.yview)
         self._listbox.pack(side=tk.LEFT, fill=tk.Y)
@@ -448,7 +451,7 @@ class KitPanel(ttk.Frame):
             cell = ttk.Frame(logo_frm)
             cell.pack(side=tk.LEFT, padx=6)
             img_lbl = tk.Label(cell, width=34, height=34,
-                               bg="#cccccc", relief=tk.SUNKEN)
+                               bg="#555555", relief=tk.SUNKEN)
             img_lbl.pack()
             slot_lbl = ttk.Label(cell, text="-", anchor=tk.CENTER, width=6)
             slot_lbl.pack()
@@ -477,14 +480,14 @@ class KitPanel(ttk.Frame):
         self._lic_var.set(False)
         self._model_var.set(0)
         for btn in self._color_buttons.values():
-            btn.config(bg="#cccccc", activebackground="#cccccc")
+            btn.config(bg="#555555", activebackground="#555555")
         self._cur_pat = [0] * len(_LAYERS)
         if hasattr(self, '_grid_canvas'):
             self._grid_canvas.delete("all")
             self._grid_thumbs = []
         self._logo_img_refs = [None] * Kits.LOGOS_PER_TEAM
         for l in range(Kits.LOGOS_PER_TEAM):
-            self._logo_imgs[l].config(image="", bg="#cccccc")
+            self._logo_imgs[l].config(image="", bg="#555555")
             self._logo_labels[l].config(text="-")
         self._preview_canvas.delete("all")
         self._preview_ref = None
@@ -526,7 +529,7 @@ class KitPanel(ttk.Frame):
                 self._logo_labels[l].config(text=f"#{slot}")
                 self._draw_logo(l, slot)
             else:
-                self._logo_imgs[l].config(image="", bg="#cccccc")
+                self._logo_imgs[l].config(image="", bg="#555555")
                 self._logo_labels[l].config(text="-")
 
         self._ok = True
@@ -541,7 +544,7 @@ class KitPanel(ttk.Frame):
                 hx = f"#{r:02x}{g:02x}{b:02x}"
                 btn.config(bg=hx, activebackground=hx)
             except Exception:
-                btn.config(bg="#cccccc", activebackground="#cccccc")
+                btn.config(bg="#555555", activebackground="#555555")
         for li, (_, _, off, n_opts) in enumerate(_LAYERS):
             try:
                 v = Kits.get_pattern_byte(self._of, t, k, off) % n_opts
@@ -563,7 +566,7 @@ class KitPanel(ttk.Frame):
                 bg.paste(img, (1, 1), mask=img)
                 ph = ImageTk.PhotoImage(bg)
                 self._logo_img_refs[l] = ph
-                lbl.config(image=ph, bg="#cccccc")
+                lbl.config(image=ph, bg="#555555")
             else:
                 lbl.config(image="", bg="#888888")
         except Exception:

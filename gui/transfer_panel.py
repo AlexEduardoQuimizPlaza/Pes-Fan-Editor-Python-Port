@@ -184,7 +184,10 @@ class SquadPane(ttk.Frame):
         self._sb.pack(side=tk.RIGHT, fill=tk.Y)
 
         self._lb_pos = tk.Listbox(lf, width=4, height=26,
-                                  font=self._font, background="#FFFFDF",
+                                  font=self._font, background="#3d3d3d",
+                                  foreground="#ffffff",
+                                  selectbackground="#0078d4",
+                                  selectforeground="#ffffff",
                                   selectmode=tk.EXTENDED,
                                   exportselection=False,
                                   activestyle="none")
@@ -192,12 +195,18 @@ class SquadPane(ttk.Frame):
 
         self._lb_num = tk.Listbox(lf, width=3, height=26,
                                   font=self._font,
+                                  background="#3d3d3d", foreground="#ffffff",
+                                  selectbackground="#0078d4",
+                                  selectforeground="#ffffff",
                                   exportselection=False,
                                   activestyle="none")
         self._lb_num.pack(side=tk.RIGHT, fill=tk.Y)
 
         self._lb_name = tk.Listbox(lf, width=16, height=26,
                                    font=self._font,
+                                   background="#3d3d3d", foreground="#ffffff",
+                                   selectbackground="#0078d4",
+                                   selectforeground="#ffffff",
                                    exportselection=False,
                                    selectmode=tk.SINGLE,
                                    activestyle="dotbox")
@@ -355,6 +364,9 @@ class FreePane(ttk.Frame):
         sb.pack(side=tk.RIGHT, fill=tk.Y)
         self._lb = tk.Listbox(lf, width=18, height=26,
                               font=self._font, exportselection=False,
+                              background="#3d3d3d", foreground="#ffffff",
+                              selectbackground="#0078d4",
+                              selectforeground="#ffffff",
                               yscrollcommand=sb.set)
         self._lb.pack(fill=tk.BOTH, expand=True)
         sb.config(command=self._lb.yview)

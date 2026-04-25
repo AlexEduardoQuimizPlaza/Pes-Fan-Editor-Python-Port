@@ -56,6 +56,9 @@ class TeamPanel(ttk.Frame):
         self._listbox = tk.Listbox(lf, yscrollcommand=sb.set,
                                    width=24, height=35,
                                    font=("Courier", 10),
+                                   background="#3d3d3d", foreground="#ffffff",
+                                   selectbackground="#0078d4",
+                                   selectforeground="#ffffff",
                                    exportselection=False)
         self._listbox.pack(side=tk.LEFT, fill=tk.Y)
         sb.config(command=self._listbox.yview)
@@ -93,7 +96,7 @@ class TeamPanel(ttk.Frame):
         # ── Emblem ────────────────────────────────────────────────────────
         ttk.Label(inner, text="Emblem", anchor=tk.CENTER).pack(fill=tk.X, pady=(10, 2))
         self._emblem_canvas = tk.Canvas(inner, width=72, height=72,
-                                         bg="#CCCCCC", relief=tk.RAISED,
+                                         bg="#555555", relief=tk.RAISED,
                                          borderwidth=2, cursor="hand2")
         self._emblem_canvas.pack()
         # "Default" text placeholder
@@ -134,7 +137,7 @@ class TeamPanel(ttk.Frame):
 
         # Canvas de bandera — click para elegir patrón
         self._flag_canvas = tk.Canvas(flag_outer, width=85, height=64,
-                                       bg="#CCCCCC", relief=tk.RAISED,
+                                       bg="#555555", relief=tk.RAISED,
                                        borderwidth=2, cursor="hand2")
         self._flag_canvas.pack(pady=2)
         self._flag_canvas.bind("<Button-1>", self._on_flag_click)

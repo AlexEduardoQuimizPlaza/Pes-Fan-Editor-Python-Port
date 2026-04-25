@@ -18,7 +18,10 @@ class LeaguePanel(ttk.Frame):
         pan = ttk.LabelFrame(self, text="League Names")
         pan.pack(padx=8, pady=8)
 
-        self._listbox = tk.Listbox(pan, width=30, height=20)
+        self._listbox = tk.Listbox(pan, width=30, height=20,
+                                   background="#3d3d3d", foreground="#ffffff",
+                                   selectbackground="#0078d4",
+                                   selectforeground="#ffffff")
         self._listbox.pack(side=tk.LEFT, fill=tk.Y, padx=4, pady=4)
         # defer to after_idle so we get the final selection state,
         # mirroring Java's e.getValueIsAdjusting() == false check
