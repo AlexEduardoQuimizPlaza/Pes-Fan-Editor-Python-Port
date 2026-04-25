@@ -52,6 +52,9 @@ class MainWindow(tk.Tk):
         self._build_tabs()
         self._set_file_loaded(False)
 
+        # Ask to open a file immediately on startup
+        self.after(100, self._open_file)
+
     # ------------------------------------------------------------------
     # UI construction
     # ------------------------------------------------------------------

@@ -18,8 +18,8 @@ _COLS     = 10
 _ROWS_16  = 10   # rows reserved for 16-colour emblems  (100 slots)
 _ROWS_128 = 5    # rows reserved for 128-colour emblems (50 slots)
 _ROWS     = _ROWS_16 + _ROWS_128   # 15
-_CELL     = 16   # px per cell in the grid
-_PREVIEW  = 128  # px for the large central preview
+_CELL     = 40   # px per cell in the grid (was 16)
+_PREVIEW  = 256  # px for the large central preview (was 128)
 
 
 class EmblemPanel(ttk.Frame):
