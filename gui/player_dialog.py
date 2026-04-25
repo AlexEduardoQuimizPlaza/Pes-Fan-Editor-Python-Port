@@ -31,11 +31,12 @@ _SIDE_LABELS = ["R side", "L side", "B side"]
 
 
 class PlayerDialog(tk.Toplevel):
-    def __init__(self, parent, of, player: Player):
+    def __init__(self, parent, of, of2, player: Player):
         super().__init__(parent)
         self.title(f"Edit Player - {player.index} - {player.name}")
         self.resizable(False, False)
-        self._of = of
+        self._of  = of
+        self._of2 = of2
         self._player = player
         self._vars = {}
         self._val_labels = {}
@@ -65,9 +66,14 @@ class PlayerDialog(tk.Toplevel):
         # Bottom buttons
         btn = ttk.Frame(self)
         btn.pack(fill=tk.X, padx=4, pady=4)
-        ttk.Button(btn, text="Accept",         command=self._save).pack(side=tk.LEFT, padx=4)
-        ttk.Button(btn, text="Cancel",         command=self.destroy).pack(side=tk.LEFT, padx=4)
-        ttk.Button(btn, text="Paste PSD Stats",command=self._paste_psd).pack(side=tk.LEFT, padx=4)
+        ttk.Button(btn, text="Accept",          command=self._save).pack(side=tk.LEFT, padx=4)
+        ttk.Button(btn, text="Cancel",          command=self.destroy).pack(side=tk.LEFT, padx=4)
+        ttk.Button(btn, text="Paste PSD Stats", command=self._paste_psd).pack(side=tk.LEFT, padx=4)
+        of2_loaded = self._of2.file_name is not None
+        ttk.Button(btn, text="Import (OF2)",
+                   command=self._open_import_dialog,
+                   state=tk.NORMAL if of2_loaded else tk.DISABLED
+                   ).pack(side=tk.LEFT, padx=4)
 
     # ── General section ───────────────────────────────────────────────────────
     def _build_general(self, parent):
@@ -193,6 +199,24 @@ class PlayerDialog(tk.Toplevel):
             ttk.Checkbutton(parent, text=s.name, variable=var).grid(
                 row=i, column=0, sticky=tk.W, padx=4, pady=1)
             self._vars[s] = var
+
+    # ── import from OF2 ───────────────────────────────────────────────────────
+    def _open_import_dialog(self):
+        from gui.import_player_dialog import ImportPlayerDialog
+        ImportPlayerDialog(self, self._of, self._of2, self._player, self._reload_fields)
+
+    def _reload_fields(self):
+        of   = self._of
+        pidx = self._player.index
+        # Re-read name in case mode 0 / mode 2 changed it
+        updated = Player(of, pidx, 0)
+        self._player.name = updated.name
+        self.title(f"Edit Player - {pidx} - {updated.name}")
+        for stat, var in self._vars.items():
+            if isinstance(var, tk.BooleanVar):
+                var.set(bool(Stats.get_value(of, pidx, stat)))
+            else:
+                var.set(Stats.get_string(of, pidx, stat))
 
     # ── save / paste ──────────────────────────────────────────────────────────
     def _paste_psd(self):

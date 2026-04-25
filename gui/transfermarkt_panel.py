@@ -557,8 +557,8 @@ class TransfermarktPanel(ttk.Frame):
     def _build_ui(self):
         if not _DEPS_OK:
             ttk.Label(self,
-                      text="Faltan dependencias:\n"
-                           "  pip install requests beautifulsoup4",
+                      text="El panel de Transfermarkt no está disponible en esta versión.\n"
+                           "Usa la versión Python del editor para acceder a esta función.",
                       foreground="red", font=("", 11)).pack(pady=40)
             return
 
@@ -641,8 +641,7 @@ class TransfermarktPanel(ttk.Frame):
             row=7, column=0, columnspan=3, sticky=tk.W, padx=6, pady=(2, 6))
         if not _PIL_OK:
             ttk.Label(cfg,
-                      text="  ⚠ Pillow no instalado — el escudo no se importará "
-                           "(pip install Pillow)",
+                      text="  ⚠ Pillow no disponible — el escudo no se importará.",
                       foreground="#BB6600").grid(
                 row=8, column=0, columnspan=3, sticky=tk.W, padx=20, pady=(0, 4))
 

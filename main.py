@@ -20,36 +20,41 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def _check_dependencies():
     """Fail fast with an actionable message if a required dep is missing."""
+    _frozen = getattr(sys, 'frozen', False)
     missing = []
+
     try:
         import tkinter  # noqa: F401
     except ImportError:
-        missing.append(
-            "tkinter is missing.\n"
-            "  Debian/Ubuntu/Mint: sudo apt install python3-tk\n"
-            "  Fedora:             sudo dnf install python3-tkinter"
-        )
+        if _frozen:
+            missing.append("tkinter no está disponible. Descarga de nuevo el ejecutable.")
+        else:
+            missing.append(
+                "tkinter is missing.\n"
+                "  Debian/Ubuntu/Mint: sudo apt install python3-tk\n"
+                "  Fedora:             sudo dnf install python3-tkinter"
+            )
 
     try:
         from PIL import Image, ImageTk  # noqa: F401
     except ImportError:
-        missing.append(
-            "Pillow with ImageTk is missing.\n"
-            "  Recommended (any OS): python -m venv .venv && "
-            "source .venv/bin/activate && pip install -r requirements.txt\n"
-            "  Debian/Ubuntu/Mint system Python: "
-            "sudo apt install python3-pil python3-pil.imagetk"
-        )
+        if _frozen:
+            missing.append("Pillow no está disponible. Descarga de nuevo el ejecutable.")
+        else:
+            missing.append(
+                "Pillow with ImageTk is missing.\n"
+                "  pip install -r requirements.txt"
+            )
 
     if missing:
-        msg = "Cannot start PES Editor — missing dependencies:\n\n" + "\n\n".join(missing)
+        msg = "No se puede iniciar PES Editor:\n\n" + "\n\n".join(missing)
         print(msg, file=sys.stderr)
         try:
             import tkinter as tk
             from tkinter import messagebox
             root = tk.Tk()
             root.withdraw()
-            messagebox.showerror("PES Editor — missing dependencies", msg)
+            messagebox.showerror("PES Editor — error al iniciar", msg)
             root.destroy()
         except Exception:
             pass

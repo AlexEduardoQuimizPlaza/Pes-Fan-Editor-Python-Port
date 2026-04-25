@@ -289,7 +289,7 @@ class MainWindow(tk.Tk):
     # ------------------------------------------------------------------
 
     def _edit_player(self, player):
-        dlg = PlayerDialog(self, self._of, player)
+        dlg = PlayerDialog(self, self._of, self._of2, player)
         self.wait_window(dlg)
         self._transfer_panel.refresh()
 

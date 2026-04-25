@@ -43,6 +43,13 @@ class ImportPanel(ttk.Frame):
             self._block_vars.append(var)
 
         ttk.Button(self, text="Import Selected Blocks", command=self._import).pack(pady=8)
+
+        ttk.Separator(self, orient=tk.HORIZONTAL).pack(fill=tk.X, padx=8, pady=4)
+        ttk.Label(self, text="Team Import", font=("", 11, "bold")).pack()
+        ttk.Label(self, text="Copy all players and roster of a single team from OF2.").pack()
+        ttk.Button(self, text="Import Full Team from OF2...",
+                   command=self._open_team_import).pack(pady=8)
+
         self._status_label = ttk.Label(self, text="")
         self._status_label.pack()
 
@@ -50,6 +57,19 @@ class ImportPanel(ttk.Frame):
         of2_loaded = self._of2.file_name is not None
         status = f"OF2: {self._of2.file_name}" if of2_loaded else "OF2: not loaded"
         self._status_label.config(text=status)
+
+    def _open_team_import(self):
+        if self._of2.file_name is None:
+            messagebox.showerror("Error", "No OF2 file loaded. Use File > Open OF2...", parent=self)
+            return
+        from gui.import_team_dialog import ImportTeamDialog
+        ImportTeamDialog(self, self._of, self._of2, on_done=self._on_team_import_done)
+
+    def _on_team_import_done(self):
+        # Notify main window to refresh all panels
+        w = self.winfo_toplevel()
+        if hasattr(w, '_refresh_all'):
+            w._refresh_all()
 
     def _import(self):
         if self._of2.file_name is None:

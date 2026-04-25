@@ -3,6 +3,7 @@ PES Editor 6 - Python Port
 Stats: all stat definitions and get/set helpers.
 """
 import os
+from pathlib import Path
 from stat_def import Stat  # noqa: F401 - re-exported for convenience
 
 # -- Physical / identity stats --
@@ -140,7 +141,7 @@ DEFAULT_NATION = [
 
 def _load_nations():
     try:
-        with open("nationality.txt", "r", encoding="utf-8") as f:
+        with open(Path(__file__).parent / "nationality.txt", "r", encoding="utf-8") as f:
             lines = [l.strip() for l in f if l.strip()]
         if lines:
             return lines
