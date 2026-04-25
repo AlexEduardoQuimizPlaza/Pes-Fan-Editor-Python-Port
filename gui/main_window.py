@@ -102,7 +102,7 @@ class MainWindow(tk.Tk):
         self._shop_panel          = ShopPanel(self._notebook, self._of)
         self._transfermarkt_panel = TransfermarktPanel(
             self._notebook, self._of,
-            refresh_fn=lambda: (self._emblem_panel.refresh(), self._team_panel.refresh())
+            refresh_fn=self._refresh_all,
         )
         self._global_panel        = GlobalPanel(self._notebook, self._of)
         self._import_panel        = ImportPanel(self._notebook, self._of, self._of2)

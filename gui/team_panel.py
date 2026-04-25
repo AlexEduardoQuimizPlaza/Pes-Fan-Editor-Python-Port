@@ -8,12 +8,27 @@ Team Panel — matches Java TeamPanel layout:
           • Emblem preview canvas
           • Flag section: colour 1 / colour 2 buttons + flag preview
           • Stadium dropdown (auto-saves on selection)
+          • Team-stats pentagon (ATQ / DF / TEC / VCD / TEQ — averaged from
+            the squad, mirrors the in-game team-select pentagon)
 """
+import math
 import tkinter as tk
 from tkinter import ttk, colorchooser, messagebox
 import clubs  as Clubs
+import squads as Squads
 import stadia as Stadia
 import stats  as Stats
+
+# Pentagon vertex order is clockwise from the top, matching the in-game
+# team-select view: TEQ (top), DF (upper-right), TEC (lower-right),
+# VCD (lower-left), ATQ (upper-left).
+_PENTAGON = [
+    ("TEQ", "team"),     # Team Work
+    ("DF",  "defence"),
+    ("TEC", "tech"),
+    ("VCD", "speed"),
+    ("ATQ", "attack"),
+]
 
 _EXTRA_SQUAD = [
     "Classic England", "Classic France", "Classic Germany",
@@ -133,6 +148,13 @@ class TeamPanel(ttk.Frame):
         self._stad_combo.pack(pady=2)
         self._stad_combo.bind("<<ComboboxSelected>>", self._set_stadium)
 
+        # ── Team stats pentagon ───────────────────────────────────────────
+        ttk.Label(inner, text="Team stats", anchor=tk.CENTER).pack(
+            fill=tk.X, pady=(16, 2))
+        self._pentagon_canvas = tk.Canvas(inner, width=180, height=160,
+                                          bg="#2a2e36", highlightthickness=0)
+        self._pentagon_canvas.pack(pady=(2, 8))
+
     # ── public API ────────────────────────────────────────────────────────────
     def refresh(self):
         if self._of is None:
@@ -199,6 +221,88 @@ class TeamPanel(ttk.Frame):
         if stad_idx < len(stad_names):
             self._stad_var.set(stad_names[stad_idx])
 
+        # Pentagon
+        self._draw_pentagon(club)
+
+    # ── pentagon ──────────────────────────────────────────────────────────────
+    def _compute_pentagon(self, club: int):
+        """Average the 5 pentagon stats across the squad. Returns dict or None.
+
+        Some squad slots reference player IDs that fall outside the editable
+        range (between TOTAL and FIRST_EDIT, or above 32951) — these are
+        in-game placeholder players whose stat block is not in the OF buffer.
+        We skip them so we don't read past the end of of.data.
+        """
+        from player import TOTAL, FIRST_EDIT
+        squad_team = 73 + club
+        pids = []
+        for s in range(32):
+            pid = Squads.get_squad_player(self._of, squad_team, s)
+            if pid <= 0:
+                continue
+            if (TOTAL <= pid < FIRST_EDIT) or pid > 32951:
+                continue
+            pids.append(pid)
+        if not pids:
+            return None
+        sums = {label: 0 for label, _ in _PENTAGON}
+        for pid in pids:
+            try:
+                for label, attr in _PENTAGON:
+                    sums[label] += Stats.get_value(self._of, pid,
+                                                   getattr(Stats, attr))
+            except IndexError:
+                # Defensive: skip if the address still falls outside the buffer
+                continue
+        n = len(pids)
+        return {k: round(v / n) for k, v in sums.items()}
+
+    def _draw_pentagon(self, club: int):
+        c = self._pentagon_canvas
+        c.delete("all")
+        W, H = int(c["width"]), int(c["height"])
+        cx, cy = W // 2, H // 2 + 4
+        R = 50
+        values = self._compute_pentagon(club)
+        if values is None:
+            c.create_text(cx, cy, text="(sin plantel)", fill="#888")
+            return
+
+        def vertex(angle, radius):
+            return cx + radius * math.cos(angle), cy + radius * math.sin(angle)
+
+        # Concentric reference rings at 25/50/75/100% — feedback for "how full"
+        for pct in (0.25, 0.5, 0.75, 1.0):
+            pts = []
+            for i in range(5):
+                ang = -math.pi / 2 + i * 2 * math.pi / 5
+                pts.extend(vertex(ang, R * pct))
+            c.create_polygon(*pts, outline="#555", fill="",
+                             width=1, dash=() if pct == 1.0 else (2, 2))
+
+        # Spokes
+        for i in range(5):
+            ang = -math.pi / 2 + i * 2 * math.pi / 5
+            x, y = vertex(ang, R)
+            c.create_line(cx, cy, x, y, fill="#555")
+
+        # Filled value polygon
+        pts = []
+        for i, (label, _attr) in enumerate(_PENTAGON):
+            ratio = max(0.05, min(1.0, values[label] / 99.0))
+            ang = -math.pi / 2 + i * 2 * math.pi / 5
+            pts.extend(vertex(ang, R * ratio))
+        c.create_polygon(*pts, outline="#7fb1ff", fill="#3268c4",
+                         stipple="gray50", width=2)
+
+        # Vertex labels with value
+        label_R = R + 18
+        for i, (label, _attr) in enumerate(_PENTAGON):
+            ang = -math.pi / 2 + i * 2 * math.pi / 5
+            x, y = vertex(ang, label_R)
+            c.create_text(x, y, text=f"{label} {values[label]}",
+                          font=("TkDefaultFont", 8, "bold"), fill="#e0e0e0")
+
     # ── emblem click / reset ──────────────────────────────────────────────────
     def _on_emblem_click(self, _event=None):
         """Left-click: open Choose Emblem dialog."""
@@ -244,7 +348,15 @@ class TeamPanel(ttk.Frame):
             _placeholder("Built-in")
             return
 
-        pixels = Emblems.decode_by_adj(self._of, adj_idx, opaque=False)
+        try:
+            pixels = Emblems.decode_by_adj(self._of, adj_idx, opaque=False)
+        except (IndexError, ValueError) as e:
+            # Indirection-table entry pointed outside the OF buffer (corrupted
+            # or unsupported emblem variant). Skip rather than break the panel.
+            print(f"[draw_emblem] club={club} adj={adj_idx} decode failed: {e}",
+                  file=sys.stderr)
+            _placeholder("Bad data", "#CC0000")
+            return
         if pixels is None:
             _placeholder("Empty")
             return

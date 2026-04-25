@@ -6,3 +6,9 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Editor runtime / dev caches
+PFE_settings.dat
+.cache/
+.claude/
+.venv/

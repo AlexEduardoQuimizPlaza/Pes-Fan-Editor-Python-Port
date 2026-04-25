@@ -9,11 +9,13 @@ Features:
   • Auto club info    : club name + crest logo imported automatically
 """
 import io
+import random
 import re
 import threading
 import unicodedata
 import tkinter as tk
 from tkinter import ttk, messagebox
+from urllib.parse import urlparse
 
 try:
     import requests
@@ -33,6 +35,7 @@ import emblems as Emblems
 import logos   as Logos
 import squads  as Squads
 import stats  as Stats
+import team_quality
 from player import Player
 
 # ── HTTP ──────────────────────────────────────────────────────────────────────
@@ -63,8 +66,11 @@ _POS_MAP = {
     "striker": "CF", "centre-forward": "CF", "forward": "CF",
 }
 
+# Baseline used as a last-resort fallback when team_quality data is unavailable
+# (e.g. data/position_stats.json missing) and the user kept the default target.
+# In normal operation team_quality.stat_block(target_overall, pos) replaces this.
 #          Atk Def Bal Stm Spd Acc Res Agi DrA DrS SPA SPS LPA LPS ShA ShP ShT FK  Cur Hea Jmp Tec Agg Men GK  TW
-_DEF_STATS = {
+_FALLBACK_STATS = {
     "GK":  [30, 55, 60, 65, 55, 55, 82, 55, 40, 40, 50, 50, 50, 50, 25, 30, 25, 30, 25, 45, 80, 40, 45, 60, 88, 65],
     "CBT": [45, 82, 75, 80, 65, 60, 70, 60, 45, 45, 60, 58, 62, 58, 35, 52, 35, 35, 30, 80, 82, 50, 78, 72, 15, 72],
     "SB":  [62, 75, 70, 78, 76, 74, 68, 74, 62, 62, 68, 65, 62, 62, 48, 52, 48, 45, 42, 58, 68, 62, 65, 66, 15, 72],
@@ -77,6 +83,32 @@ _DEF_STATS = {
     "SS":  [78, 45, 68, 72, 74, 74, 70, 74, 74, 70, 66, 65, 60, 60, 76, 72, 74, 60, 60, 65, 68, 72, 62, 70, 15, 68],
     "CF":  [80, 38, 66, 70, 70, 70, 70, 68, 70, 66, 60, 60, 56, 56, 82, 80, 80, 64, 62, 74, 74, 70, 65, 68, 15, 65],
 }
+
+
+def _resolve_stats(target_overall: int, pos: str):
+    """Real stat block scaled to (or interpolated for) target_overall+pos.
+    Uses team_quality data when present; falls back to _FALLBACK_STATS scaled
+    by target_overall/75 otherwise."""
+    if team_quality.is_available():
+        return team_quality.stat_block(target_overall, pos)
+    base  = _FALLBACK_STATS.get(pos, _FALLBACK_STATS["CMF"])
+    scale = target_overall / 75.0
+    return [max(1, min(99, round(v * scale))) for v in base]
+
+
+def _distribute_overall(team_overall: int, rank: int, total: int) -> int:
+    """Spread `team_overall` across the squad so starters > bench > reserves.
+
+    Calibrated against the wepesstats scrape: top-11 averages ≈ team avg + 6,
+    bench (12-23) ≈ team avg − 2, reserves (24-32) ≈ team avg − 9. Modeled as
+    a linear gradient from +13 (best) to −13 (worst), which matches the
+    real max/min spread in the data within ~2 points.
+    """
+    if total <= 1:
+        return team_overall
+    p = rank / (total - 1)            # 0 = best, 1 = worst
+    offset = 13 * (1 - 2 * p)
+    return max(20, min(99, round(team_overall + offset)))
 
 #        Drb TDr Pos Rea Ply Pas Scr 1o1 Pst Lin MdS Sid Cen Pen 1T  Out Mrk Sld Cov  DL  PGK 1GK LTh
 _DEF_SPEC = {
@@ -162,6 +194,34 @@ _NAT_ALIAS = {
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
+def _normalize_squad_url(url: str):
+    """
+    Accept any Transfermarkt club URL (e.g. /startseite/verein/<id>,
+    /kader/verein/<id>, with or without /saison_id/<year>) and rebuild the
+    canonical /kader/ squad URL while preserving the regional domain
+    (.es / .com / .de / ...). Returns (kader_url, origin).
+    """
+    pu = urlparse(url.strip())
+    if not pu.scheme or not pu.netloc:
+        raise ValueError("URL inválida.")
+    if "transfermarkt." not in pu.netloc:
+        raise ValueError("El dominio no parece de Transfermarkt "
+                         "(transfermarkt.com / .es / .de / ...).")
+    m = re.search(r"/verein/(\d+)", pu.path)
+    if not m:
+        raise ValueError("La URL debe ser la de un club: debe contener "
+                         "/verein/<id>.")
+    verein = m.group(1)
+    parts = [p for p in pu.path.split("/") if p]
+    slug = parts[0] if parts else "club"
+    new_path = f"/{slug}/kader/verein/{verein}"
+    saison = re.search(r"/saison_id/(\d+)", pu.path)
+    if saison:
+        new_path += f"/saison_id/{saison.group(1)}"
+    origin = f"{pu.scheme}://{pu.netloc}"
+    return origin + new_path, origin
+
+
 def _strip(text: str) -> str:
     nfkd = unicodedata.normalize("NFKD", text)
     return re.sub(r"\s+", " ",
@@ -205,6 +265,9 @@ def _scrape_page(url: str) -> dict:
         'logo_url': str | None,
     }
     """
+    pu = urlparse(url)
+    origin = f"{pu.scheme}://{pu.netloc}" if pu.scheme and pu.netloc else ""
+
     r = requests.get(url, headers=_HTTP, timeout=20)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
@@ -230,15 +293,15 @@ def _scrape_page(url: str) -> dict:
     if logo_img:
         src = logo_img.get("src") or logo_img.get("data-src") or ""
         if src and not src.endswith("wappen_default.png"):
-            logo_url = src if src.startswith("http") else "https://www.transfermarkt.es" + src
+            logo_url = src if src.startswith("http") else origin + src
 
     # ── squad table ───────────────────────────────────────────────────
     table = soup.find("table", {"class": "items"})
     if not table:
         raise ValueError(
-            "No se encontró la tabla de jugadores.\n"
-            "Verifica que la URL sea de una página de plantilla de Transfermarkt\n"
-            "(debe contener /kader/ en la URL)."
+            "No se encontró la tabla de jugadores en esa página.\n"
+            "Asegúrate de pasar una URL de un club Transfermarkt "
+            "(con /verein/<id>)."
         )
 
     players = []
@@ -265,14 +328,20 @@ def _scrape_page(url: str) -> dict:
         if len(inline_rows) >= 2:
             pos_text = _strip(inline_rows[1].get_text()).lower()
 
+        # Age sits in the first plain-numeric .zentriert cell to the right of
+        # the name column. Anchoring on the inline-table avoids picking up the
+        # shirt-number cell (also .zentriert via the rueckennummer class).
         age = 25
-        for td in row.find_all("td", {"class": "zentriert"}):
-            if td.find("img"):
-                continue
-            txt = td.get_text(strip=True)
-            if re.match(r"^\d{1,2}$", txt):
-                age = int(txt)
-                break
+        name_outer_td = inline.find_parent("td")
+        if name_outer_td:
+            for sib in name_outer_td.find_next_siblings("td"):
+                cls = sib.get("class") or []
+                if "zentriert" not in cls or sib.find("img"):
+                    continue
+                txt = sib.get_text(strip=True)
+                if re.fullmatch(r"\d{1,2}", txt):
+                    age = int(txt)
+                    break
 
         nat_raw  = "England"
         flag_img = row.find("img", {"class": "flaggenrahmen"})
@@ -290,9 +359,6 @@ def _scrape_page(url: str) -> dict:
 
     players.sort(key=_sort_key)
     return {"players": players, "club_name": club_name, "logo_url": logo_url}
-
-
-_HTTP_CDN = {**_HTTP, "Referer": "https://www.transfermarkt.es/"}
 
 
 def _download_logo_image(url: str, extra_headers: dict = None):
@@ -379,10 +445,14 @@ def _find_club_logo(tm_url: str, club_name: str, scraped_logo_url, log_fn=None):
 
     # Source 1: Transfermarkt CDN (try medium → head → big)
     verein_id = _extract_verein_id(tm_url)
+    pu = urlparse(tm_url)
+    referer = (f"{pu.scheme}://{pu.netloc}/"
+               if pu.scheme and pu.netloc
+               else "https://www.transfermarkt.com/")
     if verein_id:
         for size in ("medium", "head", "big"):
             cdn_url = f"https://tmssl.akamaized.net/images/wappen/{size}/{verein_id}.png"
-            img, err = _download_logo_image(cdn_url, {"Referer": "https://www.transfermarkt.es/"})
+            img, err = _download_logo_image(cdn_url, {"Referer": referer})
             if img:
                 return img, f"Transfermarkt CDN ({size}, verein/{verein_id})"
             _log(f"    [S1] CDN {size} ✗ {err}")
@@ -432,17 +502,21 @@ def _find_club_logo(tm_url: str, club_name: str, scraped_logo_url, log_fn=None):
 
 # ── Player write ──────────────────────────────────────────────────────────────
 
-def _apply_player(of, player_idx: int, p: dict, quality: int):
-    pos   = p["pos"]
-    scale = 0.5 + quality / 200.0   # 100 → 1.0,  50 → 0.75
+def _apply_player(of, player_idx: int, p: dict, player_overall: int):
+    pos = p["pos"]
 
     pl = Player(of, player_idx, 0)
     pl.set_name(p["name"])
     pl.set_shirt_name(p["shirt"])
 
-    base = _DEF_STATS.get(pos, _DEF_STATS["CMF"])
+    base = _resolve_stats(player_overall, pos)
+    # Per-player jitter so two squadmates at the same position+overall don't
+    # come out as identical clones. Seeded by the OF slot id so the same
+    # import produces the same numbers on a re-run.
+    rng = random.Random(player_idx * 31 + player_overall)
     for stat, val in zip(Stats.ability99, base):
-        Stats.set_value(of, player_idx, stat, max(1, round(val * scale)))
+        Stats.set_value(of, player_idx, stat,
+                        max(1, min(99, val + rng.randint(-3, 3))))
 
     spec = _DEF_SPEC.get(pos, _DEF_SPEC["CMF"])
     for stat, val in zip(Stats.ability_special, spec):
@@ -499,37 +573,60 @@ class TransfermarktPanel(ttk.Frame):
                                         state="readonly", width=28)
         self._club_combo.grid(row=0, column=1, sticky=tk.W, padx=4, pady=4)
 
-        ttk.Label(cfg, text="URL Transfermarkt\n(página /kader/):").grid(
+        ttk.Label(cfg, text="URL Transfermarkt\n(cualquier página del club):").grid(
             row=1, column=0, sticky=tk.W, padx=6)
         self._url_var = tk.StringVar()
         ttk.Entry(cfg, textvariable=self._url_var, width=54).grid(
             row=1, column=1, columnspan=2, sticky=tk.W+tk.E, padx=4, pady=4)
         ttk.Label(cfg,
-                  text="Ej: .../fc-barcelona/kader/verein/131/saison_id/2008",
+                  text="Pega cualquier URL del club (startseite, kader, ...); "
+                       "se normaliza a la página de plantilla automáticamente.",
                   foreground="gray").grid(row=2, column=1, columnspan=2,
                                           sticky=tk.W, padx=4, pady=(0, 2))
 
-        # quality slider
-        ttk.Label(cfg, text="Calidad de liga:").grid(
+        # team-overall slider
+        ttk.Label(cfg, text="Overall objetivo:").grid(
             row=3, column=0, sticky=tk.W, padx=6)
         sf = ttk.Frame(cfg)
         sf.grid(row=3, column=1, sticky=tk.W, padx=4, pady=4)
-        self._quality_var = tk.IntVar(value=85)
-        ttk.Scale(sf, from_=50, to=100, orient=tk.HORIZONTAL,
-                  variable=self._quality_var, length=160,
-                  command=lambda v: self._qlabel.config(
-                      text=f"{int(float(v))}%")).pack(side=tk.LEFT)
-        self._qlabel = ttk.Label(sf, text="85%", width=5)
+        self._overall_var = tk.IntVar(value=75)
+        self._overall_scale = ttk.Scale(
+            sf, from_=30, to=90, orient=tk.HORIZONTAL,
+            variable=self._overall_var, length=200,
+            command=lambda v: self._qlabel.config(text=f"{int(float(v))}"))
+        self._overall_scale.pack(side=tk.LEFT)
+        self._qlabel = ttk.Label(sf, text="75", width=4)
         self._qlabel.pack(side=tk.LEFT)
-        ttk.Label(cfg, text="(multiplica las estadísticas base)",
+        hint = ("30 = juvenil   50 = regional   65 = liga menor   "
+                "75 = profesional   85 = élite   90 = top mundial")
+        ttk.Label(cfg, text=hint,
                   foreground="gray").grid(row=3, column=2, sticky=tk.W)
+
+        # auto-detect overall from club name
+        self._auto_var = tk.BooleanVar(value=team_quality.is_available())
+        auto_cb = ttk.Checkbutton(
+            cfg,
+            text="Detectar nivel del equipo automáticamente "
+                 "(usa data/team_ratings.json)",
+            variable=self._auto_var,
+            command=self._on_auto_toggle)
+        auto_cb.grid(row=4, column=0, columnspan=3, sticky=tk.W,
+                     padx=6, pady=(0, 2))
+        if not team_quality.is_available():
+            auto_cb.state(["disabled"])
+            ttk.Label(cfg,
+                      text="  ⚠ data/team_ratings.json ausente — usa el slider "
+                           "manual o ejecuta tools/scrape_wepesstats.py",
+                      foreground="#BB6600").grid(
+                row=5, column=0, columnspan=3, sticky=tk.W, padx=20, pady=(0, 4))
+        self._on_auto_toggle()
 
         # overflow mode
         ttk.Label(cfg, text="Jugadores a importar:").grid(
-            row=4, column=0, sticky=tk.W, padx=6, pady=4)
+            row=6, column=0, sticky=tk.W, padx=6, pady=4)
         self._limit_var = tk.StringVar(value="all")
         lf = ttk.Frame(cfg)
-        lf.grid(row=4, column=1, sticky=tk.W, padx=4)
+        lf.grid(row=6, column=1, sticky=tk.W, padx=4)
         for text, val in [("Solo titulares (11)", "11"),
                           ("Primeros 23",         "23"),
                           ("Todos (hasta 32)",    "all")]:
@@ -541,13 +638,13 @@ class TransfermarktPanel(ttk.Frame):
         ttk.Checkbutton(cfg,
                         text="Importar también: nombre del club + escudo (logo)",
                         variable=self._info_var).grid(
-            row=5, column=0, columnspan=3, sticky=tk.W, padx=6, pady=(2, 6))
+            row=7, column=0, columnspan=3, sticky=tk.W, padx=6, pady=(2, 6))
         if not _PIL_OK:
             ttk.Label(cfg,
                       text="  ⚠ Pillow no instalado — el escudo no se importará "
                            "(pip install Pillow)",
                       foreground="#BB6600").grid(
-                row=6, column=0, columnspan=3, sticky=tk.W, padx=20, pady=(0, 4))
+                row=8, column=0, columnspan=3, sticky=tk.W, padx=20, pady=(0, 4))
 
         # button + status
         btn_row = ttk.Frame(self)
@@ -601,6 +698,15 @@ class TransfermarktPanel(ttk.Frame):
     def _tstatus(self, msg):
         self.after(0, lambda m=msg: self._status_var.set(m))
 
+    # ── auto-detect toggle ────────────────────────────────────────────────────
+    def _on_auto_toggle(self):
+        """Disable the manual slider when auto-detect is on."""
+        state = ["disabled"] if self._auto_var.get() else ["!disabled"]
+        try:
+            self._overall_scale.state(state)
+        except tk.TclError:
+            pass
+
     # ── start ─────────────────────────────────────────────────────────────────
     def _start(self):
         if self._busy:
@@ -610,13 +716,10 @@ class TransfermarktPanel(ttk.Frame):
             messagebox.showwarning("URL vacía",
                                    "Ingresa la URL de Transfermarkt.", parent=self)
             return
-        if "/kader/" not in url:
-            messagebox.showwarning(
-                "URL incorrecta",
-                "La URL debe ser de una página de plantilla.\n"
-                "Debe contener  /kader/  — por ejemplo:\n"
-                "https://www.transfermarkt.es/fc-barcelona/kader/verein/131/saison_id/2008",
-                parent=self)
+        try:
+            url, _origin = _normalize_squad_url(url)
+        except ValueError as e:
+            messagebox.showwarning("URL incorrecta", str(e), parent=self)
             return
         club_name = self._club_var.get()
         if not club_name:
@@ -625,7 +728,8 @@ class TransfermarktPanel(ttk.Frame):
             return
 
         club_idx  = self._club_names.index(club_name)
-        quality   = int(self._quality_var.get())
+        manual_overall = int(self._overall_var.get())
+        auto      = bool(self._auto_var.get())
         limit_str = self._limit_var.get()
         limit     = 11 if limit_str == "11" else (23 if limit_str == "23" else 32)
         do_info   = self._info_var.get()
@@ -637,16 +741,17 @@ class TransfermarktPanel(ttk.Frame):
 
         threading.Thread(
             target=self._worker,
-            args=(url, club_idx, club_name, quality, limit, do_info),
+            args=(url, club_idx, club_name, manual_overall, auto, limit, do_info),
             daemon=True
         ).start()
 
     # ── worker (background thread) ────────────────────────────────────────────
-    def _worker(self, url, club_idx, club_name, quality, limit, do_info):
+    def _worker(self, url, club_idx, club_name, manual_overall, auto, limit, do_info):
         try:
             self._tlog(f"▶ Equipo destino : {club_name}  (idx {club_idx})", "head")
             self._tlog(f"▶ URL            : {url}", "head")
-            self._tlog(f"▶ Calidad        : {quality}%   Límite: {limit}", "head")
+            mode_lbl = "auto-detect" if auto else f"{manual_overall} (manual)"
+            self._tlog(f"▶ Overall        : {mode_lbl}   Límite: {limit}", "head")
             self._tlog("")
 
             # ── get OF squad slots ─────────────────────────────────────
@@ -699,6 +804,24 @@ class TransfermarktPanel(ttk.Frame):
             player_slots = player_slots[:apply_count]
             self._tlog(f"→ Se aplicarán   : {apply_count} jugadores\n")
 
+            # ── resolve target overall ─────────────────────────────────
+            target_overall = manual_overall
+            if auto and team_quality.is_available() and tm_name:
+                suggested, matched = team_quality.suggest_overall(tm_name)
+                if suggested is not None:
+                    target_overall = suggested
+                    self._tlog(
+                        f"→ Overall detectado: {target_overall}  "
+                        f"(match: '{matched}')", "ok")
+                    self.after(0, lambda v=target_overall:
+                               (self._overall_var.set(v),
+                                self._qlabel.config(text=str(v))))
+                else:
+                    self._tlog(
+                        f"→ Sin match en team_ratings.json para '{tm_name}' — "
+                        f"usando slider ({manual_overall})", "warn")
+            self._tlog(f"→ Overall final  : {target_overall}", "head")
+
             # ── club info (name + logo) ────────────────────────────────
             if do_info:
                 self._tlog("[2/3] Aplicando info del club...")
@@ -735,15 +858,17 @@ class TransfermarktPanel(ttk.Frame):
             self._tlog(f"\n[3/3] Aplicando {apply_count} jugadores al OF...")
             self._tlog(
                 f"  {'#':>2}  {'Nombre':<16} {'Pos':<5} {'Edad':>4}"
-                f"  {'Nacionalidad':<22}  {'ID OF':>6}",
+                f"  {'Ovr':>3}  {'Nacionalidad':<22}  {'ID OF':>6}",
                 "head")
 
-            for pid, p in zip(player_slots, players):
-                _apply_player(self._of, pid, p, quality)
+            for rank, (pid, p) in enumerate(zip(player_slots, players)):
+                player_ovr = _distribute_overall(target_overall, rank, apply_count)
+                _apply_player(self._of, pid, p, player_ovr)
                 label = "TIT" if 1 <= p["number"] <= 11 else "SUP"
                 self._tlog(
                     f"  {p['number']:>2}  {p['name']:<16} {p['pos']:<5}"
-                    f" {p['age']:>4}  {p['nat']:<22}  id={pid}  [{label}]",
+                    f" {p['age']:>4}  {player_ovr:>3}  {p['nat']:<22}"
+                    f"  id={pid}  [{label}]",
                     "ok")
 
             self._tlog(

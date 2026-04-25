@@ -16,7 +16,7 @@ A Python/tkinter port of the classic **PES Editor 6** (originally written in Jav
 | **League** | Edit league names and settings |
 | **Stadium** | Assign stadiums to teams |
 | **PES / Shop** | Shop and PES mode settings |
-| **Transfermarkt** | Fetch player data online |
+| **Transfermarkt** | Fetch player data online (auto-detects team overall from the PES6 reference DB at `data/team_ratings.json`) |
 | **Stat Adjust** | Global stat adjustments |
 | **OF2 Import** | Merge data from a second option file |
 
@@ -29,8 +29,8 @@ A Python/tkinter port of the classic **PES Editor 6** (originally written in Jav
 ## Requirements
 
 - Python **3.8** or newer
-- `tkinter` — included with standard Python installations
-- `Pillow` — optional, needed only for emblem/logo image import/export
+- `tkinter` — bundled with standard Python on Windows/macOS. On Debian/Ubuntu/Mint install it with `sudo apt install python3-tk`.
+- `Pillow` (with `ImageTk`) — used for team flags, kits, emblems and logos.
 
 ---
 
@@ -43,18 +43,34 @@ git clone https://github.com/AlexEduardoQuimizPlaza/Pes-Fan-Editor-Python-Port.g
 cd Pes-Fan-Editor-Python-Port
 ```
 
-### 2. Install dependencies
+### 2. Install dependencies (recommended: virtualenv)
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-> If you don't need image import/export you can skip this step — the editor will still run.
+A virtualenv is recommended because `pip install Pillow` pulls in `ImageTk` automatically. If you prefer to use your distro's system Pillow on Debian/Ubuntu/Mint, install both packages explicitly:
+
+```bash
+sudo apt install python3-tk python3-pil python3-pil.imagetk
+```
 
 ### 3. Run the editor
 
 ```bash
 python main.py
+```
+
+### Optional: rebuild the team-quality reference data
+
+The Transfermarkt importer reads `data/team_ratings.json` (140 PES6 clubs with their average overall rating) and `data/position_stats.json` (per-position stat templates by overall band). Both files are committed to the repo, so you don't need to do anything for normal use. To regenerate them from the upstream source ([wepesstats.rf.gd](https://wepesstats.rf.gd)):
+
+```bash
+pip install requests beautifulsoup4 cryptography
+python tools/scrape_wepesstats.py            # ~3-5 min, resumable
+python tools/scrape_wepesstats.py --aggregate # rebuild JSONs from cache only
 ```
 
 ---

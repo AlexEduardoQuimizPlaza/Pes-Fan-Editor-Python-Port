@@ -187,6 +187,8 @@ def decode_by_adj(of, adj: int, opaque: bool = False):
         if val == FREE_MARKER:
             return None
         phys = val if val != 0 else adj   # 0 = uninitialized → direct map
+        if phys >= 50:                    # corrupted indirection — skip
+            return None
         return decode_128(of, phys, opaque)
 
     if 50 <= adj < 150:
@@ -195,6 +197,8 @@ def decode_by_adj(of, adj: int, opaque: bool = False):
         if val == FREE_MARKER:
             return None
         phys = (val - 50) if val != 0 else i  # 0 = uninitialized → direct map
+        if not (0 <= phys < 100):             # corrupted indirection — skip
+            return None
         return decode_16(of, phys, opaque)
 
     return None

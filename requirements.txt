@@ -1,5 +1,9 @@
 # PES Editor 6 - Python Port
-# Core dependency: Python 3.8+ with tkinter (included in standard Python)
+# Requires Python 3.8+ with tkinter (bundled with standard Python on most platforms;
+# on Debian/Ubuntu/Mint install it via: sudo apt install python3-tk).
 
-# Optional - required for image import/export (emblems, logos):
+# Pillow is required for image handling (team flags, kits, emblems, logos).
+# Installing via pip pulls in ImageTk automatically. If you instead use the
+# system Pillow on Debian/Ubuntu/Mint (python3-pil), you must ALSO install
+# python3-pil.imagetk separately — that's why a virtualenv + pip is recommended.
 Pillow>=9.0.0

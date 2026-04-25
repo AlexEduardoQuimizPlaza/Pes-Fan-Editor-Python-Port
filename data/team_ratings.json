@@ -1,0 +1,845 @@
+{
+  "source": "wepesstats.rf.gd",
+  "teams": {
+    "Arsenal": {
+      "avg_top16": 83.2,
+      "avg_all": 79.1,
+      "max": 97,
+      "n_players": 28
+    },
+    "R. Madrid": {
+      "avg_top16": 86.5,
+      "avg_all": 82.2,
+      "max": 97,
+      "n_players": 26
+    },
+    "F.C. Barcelona": {
+      "avg_top16": 87.2,
+      "avg_all": 81.1,
+      "max": 96,
+      "n_players": 30
+    },
+    "Juventus": {
+      "avg_top16": 83.4,
+      "avg_all": 79.5,
+      "max": 94,
+      "n_players": 26
+    },
+    "A.C. Milan": {
+      "avg_top16": 85.1,
+      "avg_all": 81.7,
+      "max": 94,
+      "n_players": 26
+    },
+    "Inter": {
+      "avg_top16": 86.5,
+      "avg_all": 82.6,
+      "max": 92,
+      "n_players": 27
+    },
+    "Chelsea": {
+      "avg_top16": 86.1,
+      "avg_all": 81.6,
+      "max": 91,
+      "n_players": 26
+    },
+    "Manchester United": {
+      "avg_top16": 85.1,
+      "avg_all": 81.0,
+      "max": 91,
+      "n_players": 26
+    },
+    "Newcastle United": {
+      "avg_top16": 82.7,
+      "avg_all": 78.9,
+      "max": 91,
+      "n_players": 29
+    },
+    "A.S. Roma": {
+      "avg_top16": 82.8,
+      "avg_all": 79.0,
+      "max": 91,
+      "n_players": 26
+    },
+    "Villarreal C.F.": {
+      "avg_top16": 80.4,
+      "avg_all": 77.1,
+      "max": 91,
+      "n_players": 24
+    },
+    "Liverpool": {
+      "avg_top16": 83.1,
+      "avg_all": 79.7,
+      "max": 90,
+      "n_players": 26
+    },
+    "Ajax": {
+      "avg_top16": 80.8,
+      "avg_all": 78.0,
+      "max": 90,
+      "n_players": 25
+    },
+    "R.C.D. Espanyol": {
+      "avg_top16": 78.6,
+      "avg_all": 76.3,
+      "max": 90,
+      "n_players": 23
+    },
+    "Bayern München": {
+      "avg_top16": 83.8,
+      "avg_all": 79.8,
+      "max": 90,
+      "n_players": 27
+    },
+    "Paris Saint-Germain": {
+      "avg_top16": 80.9,
+      "avg_all": 77.6,
+      "max": 89,
+      "n_players": 26
+    },
+    "C. Atlético Madrid": {
+      "avg_top16": 79.7,
+      "avg_all": 76.3,
+      "max": 89,
+      "n_players": 26
+    },
+    "Valencia C.F.": {
+      "avg_top16": 82.6,
+      "avg_all": 79.7,
+      "max": 89,
+      "n_players": 25
+    },
+    "R. Zaragoza": {
+      "avg_top16": 80,
+      "avg_all": 76.4,
+      "max": 89,
+      "n_players": 24
+    },
+    "Ascoli": {
+      "avg_top16": 76.9,
+      "avg_all": 74.6,
+      "max": 89,
+      "n_players": 27
+    },
+    "Portsmouth": {
+      "avg_top16": 80.4,
+      "avg_all": 77.4,
+      "max": 88,
+      "n_players": 27
+    },
+    "Werder Bremen": {
+      "avg_top16": 80.2,
+      "avg_all": 77.0,
+      "max": 88,
+      "n_players": 26
+    },
+    "Fiorentina": {
+      "avg_top16": 80.7,
+      "avg_all": 78.2,
+      "max": 88,
+      "n_players": 24
+    },
+    "Bolton Wanderers": {
+      "avg_top16": 79.6,
+      "avg_all": 76.3,
+      "max": 88,
+      "n_players": 26
+    },
+    "Tottenham Hotspur": {
+      "avg_top16": 82.5,
+      "avg_all": 78.7,
+      "max": 87,
+      "n_players": 27
+    },
+    "VFB Stuttgart": {
+      "avg_top16": 79.4,
+      "avg_all": 77.0,
+      "max": 87,
+      "n_players": 25
+    },
+    "Hamburger S.V.": {
+      "avg_top16": 79.3,
+      "avg_all": 76.5,
+      "max": 87,
+      "n_players": 27
+    },
+    "Rangers": {
+      "avg_top16": 77.6,
+      "avg_all": 75,
+      "max": 87,
+      "n_players": 25
+    },
+    "Middlesbrough": {
+      "avg_top16": 79.1,
+      "avg_all": 75.5,
+      "max": 87,
+      "n_players": 31
+    },
+    "Livorno": {
+      "avg_top16": 79,
+      "avg_all": 76.9,
+      "max": 87,
+      "n_players": 24
+    },
+    "Parma": {
+      "avg_top16": 77.2,
+      "avg_all": 74.6,
+      "max": 87,
+      "n_players": 28
+    },
+    "R.C. Deportivo la Coruña": {
+      "avg_top16": 79.9,
+      "avg_all": 75.3,
+      "max": 87,
+      "n_players": 30
+    },
+    "Benfica": {
+      "avg_top16": 80.3,
+      "avg_all": 78.0,
+      "max": 87,
+      "n_players": 28
+    },
+    "Schalke 04": {
+      "avg_top16": 80.3,
+      "avg_all": 77.8,
+      "max": 87,
+      "n_players": 25
+    },
+    "Charlton Athletic": {
+      "avg_top16": 78.8,
+      "avg_all": 75.3,
+      "max": 86,
+      "n_players": 31
+    },
+    "Lazio": {
+      "avg_top16": 79.6,
+      "avg_all": 75.9,
+      "max": 86,
+      "n_players": 26
+    },
+    "Borussia Dortmund": {
+      "avg_top16": 79.6,
+      "avg_all": 76.5,
+      "max": 86,
+      "n_players": 25
+    },
+    "West Ham United": {
+      "avg_top16": 79.8,
+      "avg_all": 77.3,
+      "max": 86,
+      "n_players": 27
+    },
+    "Olympique Lyonnais": {
+      "avg_top16": 81.2,
+      "avg_all": 77.6,
+      "max": 86,
+      "n_players": 27
+    },
+    "Blackburn Rovers": {
+      "avg_top16": 79.2,
+      "avg_all": 76.2,
+      "max": 86,
+      "n_players": 29
+    },
+    "Fulham": {
+      "avg_top16": 79.7,
+      "avg_all": 77.1,
+      "max": 86,
+      "n_players": 28
+    },
+    "AJ Auxerre": {
+      "avg_top16": 76.8,
+      "avg_all": 74.9,
+      "max": 86,
+      "n_players": 26
+    },
+    "Olympique de Marseille": {
+      "avg_top16": 78.8,
+      "avg_all": 75.8,
+      "max": 86,
+      "n_players": 27
+    },
+    "Palermo": {
+      "avg_top16": 79.3,
+      "avg_all": 76.5,
+      "max": 86,
+      "n_players": 24
+    },
+    "R. Betis": {
+      "avg_top16": 79.1,
+      "avg_all": 76.5,
+      "max": 86,
+      "n_players": 26
+    },
+    "Sevilla F.C.": {
+      "avg_top16": 80.5,
+      "avg_all": 77.7,
+      "max": 86,
+      "n_players": 26
+    },
+    "Olympiacos Piraeus": {
+      "avg_top16": 79.1,
+      "avg_all": 76.1,
+      "max": 86,
+      "n_players": 30
+    },
+    "Aston Villa": {
+      "avg_top16": 80.4,
+      "avg_all": 77.3,
+      "max": 85,
+      "n_players": 26
+    },
+    "Fenerbahçe": {
+      "avg_top16": 78.8,
+      "avg_all": 76.3,
+      "max": 85,
+      "n_players": 26
+    },
+    "Hertha Berliner S.C.": {
+      "avg_top16": 77.2,
+      "avg_all": 75.0,
+      "max": 85,
+      "n_players": 25
+    },
+    "Borussia M.": {
+      "avg_top16": 77.9,
+      "avg_all": 75.4,
+      "max": 85,
+      "n_players": 27
+    },
+    "Everton": {
+      "avg_top16": 79.2,
+      "avg_all": 76.4,
+      "max": 85,
+      "n_players": 27
+    },
+    "Atalanta": {
+      "avg_top16": 77.1,
+      "avg_all": 74.8,
+      "max": 85,
+      "n_players": 25
+    },
+    "Udinese": {
+      "avg_top16": 78.8,
+      "avg_all": 75.5,
+      "max": 85,
+      "n_players": 26
+    },
+    "PSV Eindhoven": {
+      "avg_top16": 79.6,
+      "avg_all": 77.4,
+      "max": 85,
+      "n_players": 24
+    },
+    "Club Brugge": {
+      "avg_top16": 77,
+      "avg_all": 74.6,
+      "max": 85,
+      "n_players": 27
+    },
+    "Sporting Lisbon": {
+      "avg_top16": 79.8,
+      "avg_all": 77.0,
+      "max": 85,
+      "n_players": 25
+    },
+    "Besiktas": {
+      "avg_top16": 76.9,
+      "avg_all": 74.8,
+      "max": 85,
+      "n_players": 25
+    },
+    "Galatasaray": {
+      "avg_top16": 78.9,
+      "avg_all": 75.3,
+      "max": 85,
+      "n_players": 31
+    },
+    "Anderlecht": {
+      "avg_top16": 77.8,
+      "avg_all": 75.1,
+      "max": 85,
+      "n_players": 26
+    },
+    "Shakhtar Donetsk": {
+      "avg_top16": 77.7,
+      "avg_all": 75.8,
+      "max": 85,
+      "n_players": 25
+    },
+    "Celtic": {
+      "avg_top16": 79.3,
+      "avg_all": 77.2,
+      "max": 84,
+      "n_players": 26
+    },
+    "FC Nantes-Atlantique": {
+      "avg_top16": 77.9,
+      "avg_all": 75.0,
+      "max": 84,
+      "n_players": 27
+    },
+    "C.A. Osasuna": {
+      "avg_top16": 76.2,
+      "avg_all": 74.1,
+      "max": 84,
+      "n_players": 25
+    },
+    "Girondins de Bordeaux": {
+      "avg_top16": 77.9,
+      "avg_all": 75.4,
+      "max": 84,
+      "n_players": 25
+    },
+    "AS Monaco": {
+      "avg_top16": 79.2,
+      "avg_all": 76.7,
+      "max": 84,
+      "n_players": 26
+    },
+    "Sampdoria": {
+      "avg_top16": 77.8,
+      "avg_all": 75.7,
+      "max": 84,
+      "n_players": 25
+    },
+    "Siena": {
+      "avg_top16": 77.9,
+      "avg_all": 75.1,
+      "max": 84,
+      "n_players": 26
+    },
+    "Torino": {
+      "avg_top16": 79.3,
+      "avg_all": 76.9,
+      "max": 84,
+      "n_players": 26
+    },
+    "Feyenoord": {
+      "avg_top16": 78.2,
+      "avg_all": 75.7,
+      "max": 84,
+      "n_players": 27
+    },
+    "R.C.D. Mallorca": {
+      "avg_top16": 78,
+      "avg_all": 75.6,
+      "max": 84,
+      "n_players": 24
+    },
+    "Levante U.D.": {
+      "avg_top16": 78.7,
+      "avg_all": 75.8,
+      "max": 84,
+      "n_players": 26
+    },
+    "FC Porto": {
+      "avg_top16": 79.1,
+      "avg_all": 77.2,
+      "max": 84,
+      "n_players": 28
+    },
+    "Bayer Leverkusen": {
+      "avg_top16": 78.8,
+      "avg_all": 76.4,
+      "max": 84,
+      "n_players": 25
+    },
+    "Spartak Moskva": {
+      "avg_top16": 77,
+      "avg_all": 77,
+      "max": 84,
+      "n_players": 10
+    },
+    "F.C. Copenhagen": {
+      "avg_top16": 75.5,
+      "avg_all": 73.7,
+      "max": 83,
+      "n_players": 24
+    },
+    "Stade Rennais FC": {
+      "avg_top16": 76.9,
+      "avg_all": 74.5,
+      "max": 83,
+      "n_players": 26
+    },
+    "D.S. Arminia Bielefeld": {
+      "avg_top16": 76.6,
+      "avg_all": 74.7,
+      "max": 83,
+      "n_players": 26
+    },
+    "Toulouse FC": {
+      "avg_top16": 75.9,
+      "avg_all": 73.9,
+      "max": 83,
+      "n_players": 25
+    },
+    "Manchester City": {
+      "avg_top16": 79.9,
+      "avg_all": 76.9,
+      "max": 83,
+      "n_players": 27
+    },
+    "RC Lens": {
+      "avg_top16": 76.4,
+      "avg_all": 74.5,
+      "max": 83,
+      "n_players": 25
+    },
+    "Lille OSC": {
+      "avg_top16": 76.4,
+      "avg_all": 73.8,
+      "max": 83,
+      "n_players": 30
+    },
+    "Cagliari": {
+      "avg_top16": 76.3,
+      "avg_all": 74,
+      "max": 83,
+      "n_players": 25
+    },
+    "NAC Breda": {
+      "avg_top16": 76,
+      "avg_all": 73.7,
+      "max": 83,
+      "n_players": 23
+    },
+    "FC Twente": {
+      "avg_top16": 75.8,
+      "avg_all": 73.9,
+      "max": 83,
+      "n_players": 24
+    },
+    "R.C. Celta": {
+      "avg_top16": 78.6,
+      "avg_all": 76.5,
+      "max": 83,
+      "n_players": 24
+    },
+    "R. Sociedad": {
+      "avg_top16": 76.3,
+      "avg_all": 74.5,
+      "max": 83,
+      "n_players": 24
+    },
+    "Birmingham City": {
+      "avg_top16": 77.3,
+      "avg_all": 75.5,
+      "max": 83,
+      "n_players": 24
+    },
+    "Sunderland": {
+      "avg_top16": 77,
+      "avg_all": 75.2,
+      "max": 82,
+      "n_players": 24
+    },
+    "Dynamo Kiev": {
+      "avg_top16": 77.8,
+      "avg_all": 75.7,
+      "max": 82,
+      "n_players": 28
+    },
+    "AS Saint-Étienne": {
+      "avg_top16": 77.2,
+      "avg_all": 74.8,
+      "max": 82,
+      "n_players": 26
+    },
+    "Chievo Verona": {
+      "avg_top16": 78.6,
+      "avg_all": 75.9,
+      "max": 82,
+      "n_players": 30
+    },
+    "Empoli": {
+      "avg_top16": 75.4,
+      "avg_all": 73.3,
+      "max": 82,
+      "n_players": 25
+    },
+    "Messina": {
+      "avg_top16": 76.5,
+      "avg_all": 74.5,
+      "max": 82,
+      "n_players": 25
+    },
+    "AZ": {
+      "avg_top16": 75.4,
+      "avg_all": 73,
+      "max": 82,
+      "n_players": 25
+    },
+    "Athletic Club": {
+      "avg_top16": 76.8,
+      "avg_all": 74.7,
+      "max": 82,
+      "n_players": 23
+    },
+    "R.C. Recreativo de Huelva": {
+      "avg_top16": 74.4,
+      "avg_all": 72.9,
+      "max": 82,
+      "n_players": 24
+    },
+    "Panathinaikos": {
+      "avg_top16": 77.3,
+      "avg_all": 75.2,
+      "max": 82,
+      "n_players": 26
+    },
+    "Wigan Athletic": {
+      "avg_top16": 76.8,
+      "avg_all": 74.9,
+      "max": 81,
+      "n_players": 26
+    },
+    "Sheffield United": {
+      "avg_top16": 76.8,
+      "avg_all": 74.0,
+      "max": 81,
+      "n_players": 32
+    },
+    "Rosenborg BK": {
+      "avg_top16": 76.5,
+      "avg_all": 74.7,
+      "max": 81,
+      "n_players": 24
+    },
+    "Catania": {
+      "avg_top16": 76.2,
+      "avg_all": 74,
+      "max": 81,
+      "n_players": 24
+    },
+    "Le Mans UC 72": {
+      "avg_top16": 74.2,
+      "avg_all": 72.4,
+      "max": 81,
+      "n_players": 25
+    },
+    "OGC Nice": {
+      "avg_top16": 75.9,
+      "avg_all": 73.7,
+      "max": 81,
+      "n_players": 25
+    },
+    "FC Sochaux": {
+      "avg_top16": 76.6,
+      "avg_all": 74.1,
+      "max": 81,
+      "n_players": 28
+    },
+    "Reggina": {
+      "avg_top16": 75.9,
+      "avg_all": 74.0,
+      "max": 81,
+      "n_players": 24
+    },
+    "R. Racing C.": {
+      "avg_top16": 76.1,
+      "avg_all": 73.6,
+      "max": 81,
+      "n_players": 27
+    },
+    "AC Sparta Prague": {
+      "avg_top16": 74.6,
+      "avg_all": 72.5,
+      "max": 81,
+      "n_players": 26
+    },
+    "VFL Wolfsburg": {
+      "avg_top16": 77.9,
+      "avg_all": 76.2,
+      "max": 81,
+      "n_players": 25
+    },
+    "Hannover 96": {
+      "avg_top16": 76.7,
+      "avg_all": 74.1,
+      "max": 80,
+      "n_players": 27
+    },
+    "F.C. Nurnberg": {
+      "avg_top16": 76.5,
+      "avg_all": 75.0,
+      "max": 80,
+      "n_players": 26
+    },
+    "Reading": {
+      "avg_top16": 75.6,
+      "avg_all": 73.6,
+      "max": 80,
+      "n_players": 27
+    },
+    "Valenciennes FC": {
+      "avg_top16": 74.8,
+      "avg_all": 73.5,
+      "max": 80,
+      "n_players": 24
+    },
+    "ADO Den Haag": {
+      "avg_top16": 74.4,
+      "avg_all": 72.9,
+      "max": 80,
+      "n_players": 24
+    },
+    "N.E.C. Nijmegen": {
+      "avg_top16": 74.1,
+      "avg_all": 72.0,
+      "max": 80,
+      "n_players": 24
+    },
+    "Willem II": {
+      "avg_top16": 74.5,
+      "avg_all": 73.1,
+      "max": 80,
+      "n_players": 24
+    },
+    "Getafe C.F.": {
+      "avg_top16": 75.6,
+      "avg_all": 73.6,
+      "max": 80,
+      "n_players": 24
+    },
+    "R. Valladolid": {
+      "avg_top16": 73.8,
+      "avg_all": 72.1,
+      "max": 80,
+      "n_players": 24
+    },
+    "F.C. Energie Cottbus": {
+      "avg_top16": 75.1,
+      "avg_all": 72.6,
+      "max": 80,
+      "n_players": 26
+    },
+    "F.S.V. Mainz 05": {
+      "avg_top16": 75.6,
+      "avg_all": 74.1,
+      "max": 80,
+      "n_players": 26
+    },
+    "FC Utrecht": {
+      "avg_top16": 75.9,
+      "avg_all": 73.8,
+      "max": 79,
+      "n_players": 24
+    },
+    "CSKA Moskva": {
+      "avg_top16": 76.6,
+      "avg_all": 74.4,
+      "max": 79,
+      "n_players": 24
+    },
+    "T.V.S. Alemannia Aachen": {
+      "avg_top16": 76.2,
+      "avg_all": 74.0,
+      "max": 79,
+      "n_players": 25
+    },
+    "ES Troyes AC": {
+      "avg_top16": 75.2,
+      "avg_all": 73.3,
+      "max": 79,
+      "n_players": 27
+    },
+    "RKC Waalwijk": {
+      "avg_top16": 74.1,
+      "avg_all": 72.0,
+      "max": 79,
+      "n_players": 24
+    },
+    "Sparta Rotterdam": {
+      "avg_top16": 73.3,
+      "avg_all": 71.4,
+      "max": 79,
+      "n_players": 25
+    },
+    "Vitesse": {
+      "avg_top16": 73.7,
+      "avg_all": 72.2,
+      "max": 79,
+      "n_players": 25
+    },
+    "C. Gimnastic": {
+      "avg_top16": 74.4,
+      "avg_all": 72.7,
+      "max": 79,
+      "n_players": 24
+    },
+    "Djurgardens IF": {
+      "avg_top16": 74.1,
+      "avg_all": 72.7,
+      "max": 79,
+      "n_players": 24
+    },
+    "Eintracht Frankfurt": {
+      "avg_top16": 76.1,
+      "avg_all": 74.2,
+      "max": 79,
+      "n_players": 26
+    },
+    "VFL Bochum": {
+      "avg_top16": 76,
+      "avg_all": 73.8,
+      "max": 79,
+      "n_players": 27
+    },
+    "SC Heerenveen": {
+      "avg_top16": 74.8,
+      "avg_all": 72.8,
+      "max": 78,
+      "n_players": 26
+    },
+    "FC Lorient": {
+      "avg_top16": 74.3,
+      "avg_all": 72.5,
+      "max": 78,
+      "n_players": 28
+    },
+    "Watford": {
+      "avg_top16": 74.9,
+      "avg_all": 72.5,
+      "max": 78,
+      "n_players": 29
+    },
+    "FC Groningen": {
+      "avg_top16": 74.3,
+      "avg_all": 72.5,
+      "max": 78,
+      "n_players": 24
+    },
+    "Heracles Almelo": {
+      "avg_top16": 73.5,
+      "avg_all": 72.2,
+      "max": 78,
+      "n_players": 24
+    },
+    "AS Nancy-Lorraine": {
+      "avg_top16": 74.2,
+      "avg_all": 72.5,
+      "max": 77,
+      "n_players": 27
+    },
+    "Roda JC": {
+      "avg_top16": 73.8,
+      "avg_all": 71.7,
+      "max": 77,
+      "n_players": 24
+    },
+    "SBV Excelsior": {
+      "avg_top16": 72.3,
+      "avg_all": 70.2,
+      "max": 76,
+      "n_players": 25
+    },
+    "CS Sedan": {
+      "avg_top16": 73.5,
+      "avg_all": 72.3,
+      "max": 75,
+      "n_players": 24
+    }
+  }
+}
