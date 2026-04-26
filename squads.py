@@ -52,6 +52,11 @@ def fix_form(of, s: int, fix_jobs: bool):
 def fix_all(of):
     for i in range(213):
         fix_form(of, i, True)
+    # Java's fixAll also processes squads 64-72 (which Python skips).
+    # Normalize their slot bytes so Java doesn't read values > 127 as negative indices.
+    for gap in range(64, 73):
+        for i in range(32):
+            Formations.set_slot(of, gap, i, i)
 
 
 def tidy(of, team: int):

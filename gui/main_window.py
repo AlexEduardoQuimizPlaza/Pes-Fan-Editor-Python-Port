@@ -199,6 +199,7 @@ class MainWindow(tk.Tk):
     def _save(self):
         if not self._current_file:
             return
+        Squads.fix_all(self._of)
         if os.path.exists(self._current_file):
             os.remove(self._current_file)
         if self._of.save(self._current_file):
@@ -226,6 +227,7 @@ class MainWindow(tk.Tk):
         if not path:
             return
         self._save_settings()
+        Squads.fix_all(self._of)
         if self._of.save(path):
             self._current_file = path
             self.title(f"PES Editor 6 - {os.path.basename(path)}")
